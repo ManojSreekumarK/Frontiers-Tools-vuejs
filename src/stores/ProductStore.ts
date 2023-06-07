@@ -11,8 +11,7 @@ interface Product {
 
 export const useProductStore = defineStore('Product', {
   state: () => ({
-    apiData: [] as Product[],
-    SelectProduct: false
+    apiData: [] as Product[]
   }),
   actions: {
     async fetchData() {
@@ -43,20 +42,6 @@ export const useProductStore = defineStore('Product', {
       if (storedState) {
         this.apiData = JSON.parse(storedState)
       }
-    },
-    selectProduct() {
-      this.SelectProduct = true
-    },
-    persistProduct(productid: string) {
-      const state = this.SelectProduct
-      sessionStorage.setItem('SelectedProductid', productid)
-      sessionStorage.setItem('SelectProduct', JSON.stringify(state))
-    },
-    loadProduct() {
-      const storedState = sessionStorage.getItem('SelectProduct')
-      if (storedState) {
-        this.SelectProduct = JSON.parse(storedState)
-      }
     }
   },
   getters: {
@@ -67,6 +52,11 @@ export const useProductStore = defineStore('Product', {
           return state.apiData
         }
         return state.apiData.filter((product) => product.segmentId === segmentId)
+      },
+    getProductsById:
+      (state) =>
+      (productId: string): Product[] => {
+        return state.apiData.filter((product) => product.productId === productId)
       }
   }
 })

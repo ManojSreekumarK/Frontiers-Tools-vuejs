@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { useSearchStore } from '../stores/SearchStore'
+import { useSearchStore } from '@/stores/SearchStore'
 
 const searchQuery = ref('')
 

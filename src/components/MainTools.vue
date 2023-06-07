@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeMount } from 'vue'
-import { useSegmentStore } from '../stores/SegmentStore'
-import { useSearchStore } from '../stores/SearchStore'
-import { useProductStore } from '../stores/ProductStore'
+import { useSegmentStore } from '@/stores/SegmentStore'
+import { useSearchStore } from '@/stores/SearchStore'
+import { useProductStore } from '@/stores/ProductStore'
+import { useRouter } from 'vue-router'
 // Reactive variables
 const bookmarkpage = ref('main')
 let selectedProduct = ref('')
@@ -10,24 +11,96 @@ const store = useSearchStore()
 const ProductStore = useProductStore()
 const Segments = useSegmentStore()
 
-// Lifecycle hooks
-onMounted(async () => {
-  await ProductStore.fetchData()
-  ProductStore.loadState()
-  sessionStorage.setItem('SelectProduct', JSON.stringify(false))
+// Computed Properties
+const searchQuery = computed(() => store.getSearchQuery)
+const displayedProducts = computed(() => {
+  // for all products and segment wise filtering
+  if (bookmarkpage.value === 'main' && searchQuery.value === '') {
+    if (activeSegmentId.value) {
+      return ProductStore.getProductsBySegmentId(activeSegmentId.value)
+    } else {
+      return ProductStore.apiData
+    }
+  } else if (bookmarkpage.value === 'saved' && searchQuery.value === '') {
+    // for saved products and segment wise filtering
+    if (activeSegmentId.value) {
+      return ProductStore.getProductsBySegmentId(activeSegmentId.value).filter(
+        (product) => product.saved
+      )
+    } else {
+      return ProductStore.apiData
+    }
+  }
+  if (bookmarkpage.value === 'main' && searchQuery.value != '') {
+    // for searching using product name in all products
+    if (activeSegmentId.value) {
+      return ProductStore.getProductsBySegmentId(activeSegmentId.value).filter((product) =>
+        product.productName.toLowerCase().includes(searchQuery.value.toLowerCase())
+      )
+    } else {
+      return ProductStore.apiData
+    }
+  } else if (bookmarkpage.value === 'saved' && searchQuery.value != '') {
+    // for searching using product name in saved products
+    if (activeSegmentId.value) {
+      return ProductStore.getProductsBySegmentId(activeSegmentId.value)
+        .filter((product) => product.saved)
+        .filter((product) =>
+          product.productName.toLowerCase().includes(searchQuery.value.toLowerCase())
+        )
+    } else {
+      return ProductStore.apiData
+    }
+  }
+  if (bookmarkpage.value === 'main' && searchQuery.value === '') {
+    // for showing selected product on a new tab
+    if (activeSegmentId.value) {
+      return ProductStore.getProductsBySegmentId(activeSegmentId.value).filter(
+        (product) => product.productId === selectedProduct.value
+      )
+    } else {
+      return ProductStore.apiData
+    }
+  } else if (bookmarkpage.value === 'saved' && searchQuery.value === '') {
+    // for showing selected product on a new tab
+    if (activeSegmentId.value) {
+      return ProductStore.getProductsBySegmentId(activeSegmentId.value)
+        .filter((product) => product.saved)
+        .filter((product) => product.productId === selectedProduct.value)
+    } else {
+      return ProductStore.apiData
+    }
+  }
+  if (bookmarkpage.value === 'main' && searchQuery.value != '') {
+    // for showing selected product on a new tab
+    if (activeSegmentId.value) {
+      return ProductStore.getProductsBySegmentId(activeSegmentId.value)
+        .filter((product) =>
+          product.productName.toLowerCase().includes(searchQuery.value.toLowerCase())
+        )
+        .filter((product) => product.productId === selectedProduct.value)
+    } else {
+      return ProductStore.apiData
+    }
+  } else if (bookmarkpage.value === 'saved' && searchQuery.value != '') {
+    if (activeSegmentId.value) {
+      return ProductStore.getProductsBySegmentId(activeSegmentId.value)
+        .filter((product) => product.saved)
+        .filter((product) =>
+          product.productName.toLowerCase().includes(searchQuery.value.toLowerCase())
+        )
+        .filter((product) => product.productId === selectedProduct.value)
+    } else {
+      return ProductStore.apiData
+    }
+  }
 })
-onBeforeMount(async () => {
-  ProductStore.loadProduct()
-  selectedProduct.value = sessionStorage.getItem('SelectedProductid') || ''
-})
+
 // Methods
 // to load Product on a new tab
 const openInNewTab = (productId: string) => {
-  ProductStore.selectProduct()
-  ProductStore.persistProduct(productId)
-  const currentURL = window.location.href
+  const currentURL = window.location.href + 'Product/' + productId
   window.open(currentURL, '_blank')
-  ProductStore.SelectProduct = false
 }
 //button array of objects for filtering segment wise
 
@@ -55,106 +128,7 @@ const displaySegmentProducts = (buttonId: string) => {
 }
 
 // recieve search query through pinia search store
-const searchQuery = computed(() => store.getSearchQuery)
 
-const displayedProducts = computed(() => {
-  // for all products and segment wise filtering
-  if (bookmarkpage.value === 'main' && searchQuery.value === '' && !ProductStore.SelectProduct) {
-    if (activeSegmentId.value) {
-      return ProductStore.getProductsBySegmentId(activeSegmentId.value)
-    } else {
-      return ProductStore.apiData
-    }
-  } else if (
-    bookmarkpage.value === 'saved' &&
-    searchQuery.value === '' &&
-    !ProductStore.SelectProduct
-  ) {
-    // for saved products and segment wise filtering
-    if (activeSegmentId.value) {
-      return ProductStore.getProductsBySegmentId(activeSegmentId.value).filter(
-        (product) => product.saved
-      )
-    } else {
-      return ProductStore.apiData
-    }
-  }
-  if (bookmarkpage.value === 'main' && searchQuery.value != '' && !ProductStore.SelectProduct) {
-    // for searching using product name in all products
-    if (activeSegmentId.value) {
-      return ProductStore.getProductsBySegmentId(activeSegmentId.value).filter((product) =>
-        product.productName.toLowerCase().includes(searchQuery.value.toLowerCase())
-      )
-    } else {
-      return ProductStore.apiData
-    }
-  } else if (
-    bookmarkpage.value === 'saved' &&
-    searchQuery.value != '' &&
-    !ProductStore.SelectProduct
-  ) {
-    // for searching using product name in saved products
-    if (activeSegmentId.value) {
-      return ProductStore.getProductsBySegmentId(activeSegmentId.value)
-        .filter((product) => product.saved)
-        .filter((product) =>
-          product.productName.toLowerCase().includes(searchQuery.value.toLowerCase())
-        )
-    } else {
-      return ProductStore.apiData
-    }
-  }
-  if (bookmarkpage.value === 'main' && searchQuery.value === '' && ProductStore.SelectProduct) {
-    // for showing selected product on a new tab
-    if (activeSegmentId.value) {
-      return ProductStore.getProductsBySegmentId(activeSegmentId.value).filter(
-        (product) => product.productId === selectedProduct.value
-      )
-    } else {
-      return ProductStore.apiData
-    }
-  } else if (
-    bookmarkpage.value === 'saved' &&
-    searchQuery.value === '' &&
-    ProductStore.SelectProduct
-  ) {
-    // for showing selected product on a new tab
-    if (activeSegmentId.value) {
-      return ProductStore.getProductsBySegmentId(activeSegmentId.value)
-        .filter((product) => product.saved)
-        .filter((product) => product.productId === selectedProduct.value)
-    } else {
-      return ProductStore.apiData
-    }
-  }
-  if (bookmarkpage.value === 'main' && searchQuery.value != '' && ProductStore.SelectProduct) {
-    // for showing selected product on a new tab
-    if (activeSegmentId.value) {
-      return ProductStore.getProductsBySegmentId(activeSegmentId.value)
-        .filter((product) =>
-          product.productName.toLowerCase().includes(searchQuery.value.toLowerCase())
-        )
-        .filter((product) => product.productId === selectedProduct.value)
-    } else {
-      return ProductStore.apiData
-    }
-  } else if (
-    bookmarkpage.value === 'saved' &&
-    searchQuery.value != '' &&
-    ProductStore.SelectProduct
-  ) {
-    if (activeSegmentId.value) {
-      return ProductStore.getProductsBySegmentId(activeSegmentId.value)
-        .filter((product) => product.saved)
-        .filter((product) =>
-          product.productName.toLowerCase().includes(searchQuery.value.toLowerCase())
-        )
-        .filter((product) => product.productId === selectedProduct.value)
-    } else {
-      return ProductStore.apiData
-    }
-  }
-})
 // to toggle image of saved button
 const imageUrl = ref(
   'https://gist.githack.com/ManojSreekumarK/c910dfc0bde5ceb9f29960ae524a9aa7/raw/e6898b177645160c1d46e14826400dc05ca2a365/bookmark2.svg'
@@ -184,6 +158,13 @@ const toggleBookmark = (productId: string) => {
   ProductStore.toggleBookmark(productId)
   ProductStore.persistState()
 }
+
+// Lifecycle hooks
+onMounted(async () => {
+  await ProductStore.fetchData()
+  ProductStore.loadState()
+  sessionStorage.setItem('SelectProduct', JSON.stringify(false))
+})
 </script>
 
 <template>

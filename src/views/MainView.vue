@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import SearchBox from './SearchBox.vue'
-
-import AsideComponent from './AsideComponent.vue'
-import MainTools from './MainTools.vue'
+import SearchBox from '@/components/SearchBox.vue'
+import AsideComponent from '@/components/AsideComponent.vue'
+import MainTools from '@/components/MainTools.vue'
 
 const components = {
   'search-box': SearchBox,

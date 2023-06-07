@@ -1,21 +1,20 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import NavBar from './components/NavBar.vue'
-import MainContent from './components/MainContent.vue'
+import { RouterView, RouterLink } from 'vue-router'
+import NavBar from '@/components/NavBar.vue'
+
 const components = {
-  'nav-bar': NavBar,
-  'main-content': MainContent
+  'nav-bar': NavBar
 }
 </script>
 
 <template>
   <nav-bar></nav-bar>
-  <main-content></main-content>
+  <RouterView />
 </template>
 
 <style lang="scss">
-@import './styles/1-base/base-dir.scss';
-@import './styles/2-layouts/layout-dir.scss';
-@import './styles/3-modules/modules-dir.scss';
-@import './styles/4-responsive/responsive-dir.scss';
+@import '@/assets/styles/base/base-dir.scss';
+@import '@/assets/styles/layouts/layout-dir.scss';
+@import '@/assets/styles/modules/modules-dir.scss';
+@import '@/assets/styles/responsive/responsive-dir.scss';
 </style>

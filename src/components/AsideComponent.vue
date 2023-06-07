@@ -1,9 +1,7 @@
-<script setup lang="ts"></script>
-
 <template>
   <div class="aside_header">
     My tools
-    <hr />
+    <div class="line"></div>
   </div>
   <!-- side menu with other tool cards -->
   <div class="mytool_cards">
