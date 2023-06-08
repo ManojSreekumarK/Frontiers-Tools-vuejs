@@ -345,7 +345,7 @@
   font-weight: 700;
   margin-bottom: 1.5rem;
   border-bottom: 2px solid $black;
-  clip-path: inset(0 74% 0 0);
+  width: max-content;
 }
 
 .mytool_cards {
