@@ -1,29 +1,57 @@
 <template>
   <div>
-    <img src="@/assets/icons/businessworkflow.svg" />
-    <span>Article {{ pid }}</span>
-    <h2>businessworkflow</h2>
-    <p>
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate, similique quidem! Ab?
-    </p>
+    <!-- <img :src="'src/assets/icons/' + `${getSegmentIcon(displayedProduct?.segmentId)}`" /> -->
+    <img :src="getSegmentIcon(displayedProduct?.segmentId)" /><br />
+    <span>{{ getSegmentName(displayedProduct?.segmentId) }}</span>
+    <h2>{{ displayedProduct?.productName }}</h2>
+    <p>{{ displayedProduct?.description }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps, computed } from 'vue'
+import { defineProps, computed, onMounted, ref, onBeforeMount } from 'vue'
 import { useProductStore } from '@/stores/ProductStore'
+import { useSegmentStore } from '@/stores/SegmentStore'
+
 const ProductStore = useProductStore()
-const props = defineProps(['pid'])
+const Segments = useSegmentStore()
+const props = defineProps(['pid', 'icon'])
 const displayedProduct = computed(() => {
-  ProductStore.getProductsById(props.pid)
+  return ProductStore.getProductsById(props.pid)
 })
-console.log(displayedProduct)
+
+const getSegmentIcon = (segmentId: string | undefined) => {
+  const segment = Segments.Segments.find((item) => item.id === segmentId)
+  return segment ? new URL(`../assets/icons/${segment.icon}`, import.meta.url).href : ''
+}
+
+const getSegmentName = (segmentId: string | undefined) => {
+  const segment = Segments.Segments.find((item) => item.id === segmentId)
+  return segment ? segment.displayName : ''
+}
+
+onMounted(async () => {
+  await ProductStore.fetchData()
+  ProductStore.loadState()
+})
 </script>
+
 <style lang="scss" scoped>
 div {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  max-width: 500px;
+  background-color: white;
+  padding: 30px;
+  border-radius: 5px;
+
+  P {
+    text-align: justify;
+  }
+  h2 {
+    margin: 10px 0;
+  }
 }
 </style>

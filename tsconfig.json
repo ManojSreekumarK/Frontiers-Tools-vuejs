@@ -12,6 +12,7 @@
     }
   ],
   "compilerOptions": {
+    "types": ["node"],
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true

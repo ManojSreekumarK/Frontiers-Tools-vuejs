@@ -55,8 +55,8 @@ export const useProductStore = defineStore('Product', {
       },
     getProductsById:
       (state) =>
-      (productId: string): Product[] => {
-        return state.apiData.filter((product) => product.productId === productId)
+      (productId: string): Product | undefined => {
+        return state.apiData.find((product) => product.productId === productId)
       }
   }
 })

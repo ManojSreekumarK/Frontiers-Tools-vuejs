@@ -3,7 +3,7 @@ import { ref, computed, onMounted, onBeforeMount } from 'vue'
 import { useSegmentStore } from '@/stores/SegmentStore'
 import { useSearchStore } from '@/stores/SearchStore'
 import { useProductStore } from '@/stores/ProductStore'
-import { useRouter } from 'vue-router'
+
 // Reactive variables
 const bookmarkpage = ref('main')
 let selectedProduct = ref('')
@@ -98,7 +98,7 @@ const displayedProducts = computed(() => {
 
 // Methods
 // to load Product on a new tab
-const openInNewTab = (productId: string) => {
+const openInNewTab = (productId: string, segmentIcon: string) => {
   const currentURL = window.location.href + 'Product/' + productId
   window.open(currentURL, '_blank')
 }
@@ -147,7 +147,7 @@ const toggleImageSrc = () => {
 // using both segment array of objects and products api to list products
 const getSegmentIcon = (segmentId: string) => {
   const segment = Segments.Segments.find((item) => item.id === segmentId)
-  return segment ? `src/assets/icons/${segment.icon}` : ''
+  return segment ? segment.icon : ''
 }
 const getSegmentName = (segmentId: string) => {
   const segment = Segments.Segments.find((item) => item.id === segmentId)
@@ -163,7 +163,6 @@ const toggleBookmark = (productId: string) => {
 onMounted(async () => {
   await ProductStore.fetchData()
   ProductStore.loadState()
-  sessionStorage.setItem('SelectProduct', JSON.stringify(false))
 })
 </script>
 
@@ -214,10 +213,19 @@ onMounted(async () => {
   <!-- All products -->
   <section class="tool_cards" v-if="bookmarkpage === 'main'">
     <div v-for="product in displayedProducts" :key="product.productId" class="tool_card">
-      <div class="tool_icon_container" @click="openInNewTab(product.productId)">
-        <img :src="getSegmentIcon(product.segmentId)" alt="Segment.displayName" />
+      <div
+        class="tool_icon_container"
+        @click="openInNewTab(product.productId, getSegmentIcon(product.segmentId))"
+      >
+        <img
+          :src="`src/assets/icons/${getSegmentIcon(product.segmentId)}`"
+          alt="Segment.displayName"
+        />
       </div>
-      <div class="tool_card_content" @click="openInNewTab(product.productId)">
+      <div
+        class="tool_card_content"
+        @click="openInNewTab(product.productId, getSegmentIcon(product.segmentId))"
+      >
         <span>{{ getSegmentName(product.segmentId) }}</span>
         <h2>{{ product.productName }}</h2>
         <p>
@@ -249,10 +257,19 @@ onMounted(async () => {
   <!-- Saved Products -->
   <section class="saved_cards" v-if="bookmarkpage === 'saved'">
     <div v-for="product in displayedProducts" :key="product.productId" class="tool_card">
-      <div class="tool_icon_container" @click="openInNewTab(product.productId)">
-        <img :src="getSegmentIcon(product.segmentId)" alt="Segment.displayName" />
+      <div
+        class="tool_icon_container"
+        @click="openInNewTab(product.productId, getSegmentIcon(product.segmentId))"
+      >
+        <img
+          :src="`src/assets/icons/${getSegmentIcon(product.segmentId)}`"
+          alt="Segment.displayName"
+        />
       </div>
-      <div class="tool_card_content" @click="openInNewTab(product.productId)">
+      <div
+        class="tool_card_content"
+        @click="openInNewTab(product.productId, getSegmentIcon(product.segmentId))"
+      >
         <span>{{ getSegmentName(product.segmentId) }}</span>
         <h2>{{ product.productName }}</h2>
         <p>
