@@ -15,16 +15,17 @@ import { useSegmentStore } from '@/stores/SegmentStore'
 
 const ProductStore = useProductStore()
 const Segments = useSegmentStore()
-const props = defineProps(['pid', 'icon'])
+const props = defineProps(['pid'])
+// get product by id
 const displayedProduct = computed(() => {
   return ProductStore.getProductsById(props.pid)
 })
-
+//  get segment icon  using id
 const getSegmentIcon = (segmentId: string | undefined) => {
   const segment = Segments.Segments.find((item) => item.id === segmentId)
   return segment ? new URL(`../assets/icons/${segment.icon}`, import.meta.url).href : ''
 }
-
+// get segment name using id
 const getSegmentName = (segmentId: string | undefined) => {
   const segment = Segments.Segments.find((item) => item.id === segmentId)
   return segment ? segment.displayName : ''

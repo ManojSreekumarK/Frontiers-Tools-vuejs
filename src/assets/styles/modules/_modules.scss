@@ -240,6 +240,9 @@
     position: relative;
     cursor: pointer;
     flex: 0 0 auto;
+    &:last-of-type {
+      margin-right: 50px;
+    }
   }
 }
 .saved_wraper {
@@ -265,11 +268,7 @@
     height: 1rem !important;
   }
 }
-.space {
-  flex-grow: 1;
-  min-width: 50px;
-  min-height: 100%;
-}
+
 .filter_active {
   color: $black !important;
   font-weight: 500 !important;
@@ -345,6 +344,8 @@
   line-height: 1.75rem;
   font-weight: 700;
   margin-bottom: 1.5rem;
+  border-bottom: 2px solid $black;
+  clip-path: inset(0 74% 0 0);
 }
 
 .mytool_cards {
@@ -378,9 +379,4 @@
     line-height: 0.875rem;
     font-weight: 700;
   }
-}
-.line {
-  width: 18%;
-  border-top: 2px solid $black;
-  height: 0;
 }

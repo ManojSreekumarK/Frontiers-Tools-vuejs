@@ -5,12 +5,27 @@ import { useSearchStore } from '@/stores/SearchStore'
 import { useProductStore } from '@/stores/ProductStore'
 
 // Reactive variables
-const bookmarkpage = ref('main')
 let selectedProduct = ref('')
+const bookmarkpage = ref('main')
 const store = useSearchStore()
 const ProductStore = useProductStore()
 const Segments = useSegmentStore()
-
+const imageUrl = ref(
+  'https://gist.githack.com/ManojSreekumarK/c910dfc0bde5ceb9f29960ae524a9aa7/raw/e6898b177645160c1d46e14826400dc05ca2a365/bookmark2.svg'
+)
+const activeSegmentId = ref('00000')
+// Arrays
+const buttons = ref([
+  { id: '00000', label: 'All', active: true },
+  { id: '1es23', label: 'Office platforms', active: false },
+  { id: '1xs2e', label: 'Advanced Settings', active: false },
+  { id: 'xs2e1', label: 'Data', active: false },
+  {
+    id: 'xf2e1',
+    label: 'More',
+    active: false
+  }
+])
 // Computed Properties
 const searchQuery = computed(() => store.getSearchQuery)
 const displayedProducts = computed(() => {
@@ -52,48 +67,6 @@ const displayedProducts = computed(() => {
       return ProductStore.apiData
     }
   }
-  if (bookmarkpage.value === 'main' && searchQuery.value === '') {
-    // for showing selected product on a new tab
-    if (activeSegmentId.value) {
-      return ProductStore.getProductsBySegmentId(activeSegmentId.value).filter(
-        (product) => product.productId === selectedProduct.value
-      )
-    } else {
-      return ProductStore.apiData
-    }
-  } else if (bookmarkpage.value === 'saved' && searchQuery.value === '') {
-    // for showing selected product on a new tab
-    if (activeSegmentId.value) {
-      return ProductStore.getProductsBySegmentId(activeSegmentId.value)
-        .filter((product) => product.saved)
-        .filter((product) => product.productId === selectedProduct.value)
-    } else {
-      return ProductStore.apiData
-    }
-  }
-  if (bookmarkpage.value === 'main' && searchQuery.value != '') {
-    // for showing selected product on a new tab
-    if (activeSegmentId.value) {
-      return ProductStore.getProductsBySegmentId(activeSegmentId.value)
-        .filter((product) =>
-          product.productName.toLowerCase().includes(searchQuery.value.toLowerCase())
-        )
-        .filter((product) => product.productId === selectedProduct.value)
-    } else {
-      return ProductStore.apiData
-    }
-  } else if (bookmarkpage.value === 'saved' && searchQuery.value != '') {
-    if (activeSegmentId.value) {
-      return ProductStore.getProductsBySegmentId(activeSegmentId.value)
-        .filter((product) => product.saved)
-        .filter((product) =>
-          product.productName.toLowerCase().includes(searchQuery.value.toLowerCase())
-        )
-        .filter((product) => product.productId === selectedProduct.value)
-    } else {
-      return ProductStore.apiData
-    }
-  }
 })
 
 // Methods
@@ -102,19 +75,6 @@ const openInNewTab = (productId: string, segmentIcon: string) => {
   const currentURL = window.location.href + 'Product/' + productId
   window.open(currentURL, '_blank')
 }
-//button array of objects for filtering segment wise
-
-const buttons = ref([
-  { id: '00000', label: 'All', active: true },
-  { id: '1es23', label: 'Office platforms', active: false },
-  { id: '1xs2e', label: 'Advanced Settings', active: false },
-  { id: 'xs2e1', label: 'Data', active: false },
-  {
-    id: 'xf2e1',
-    label: 'More',
-    active: false
-  }
-])
 // adding active style to each button clicked
 const handleButtonClick = (buttonId: string) => {
   buttons.value.forEach((button) => {
@@ -122,17 +82,11 @@ const handleButtonClick = (buttonId: string) => {
   })
 }
 // Main content logic  for products, search and saved
-const activeSegmentId = ref('00000')
 const displaySegmentProducts = (buttonId: string) => {
   activeSegmentId.value = buttonId
 }
 
-// recieve search query through pinia search store
-
 // to toggle image of saved button
-const imageUrl = ref(
-  'https://gist.githack.com/ManojSreekumarK/c910dfc0bde5ceb9f29960ae524a9aa7/raw/e6898b177645160c1d46e14826400dc05ca2a365/bookmark2.svg'
-)
 const toggleBookmarkPage = () => {
   bookmarkpage.value = bookmarkpage.value === 'main' ? 'saved' : 'main'
 }
@@ -168,12 +122,12 @@ onMounted(async () => {
 
 <template>
   <!-- Total tools -->
-  <div class="total_tools">
+  <h1 class="total_tools">
     <span id="total">{{ displayedProducts?.length }}</span> tools
-  </div>
+  </h1>
   <!-- Filter buttons -->
   <div class="filterwaraper">
-    <div
+    <button
       class="saved_wraper"
       @click="
         () => {
@@ -185,7 +139,7 @@ onMounted(async () => {
       <div class="saved">
         <img :src="imageUrl" alt="saved" />
       </div>
-    </div>
+    </button>
     <div class="filters">
       <button
         v-for="button in buttons"
@@ -206,8 +160,6 @@ onMounted(async () => {
           alt="Additional Image"
         />
       </button>
-
-      <div class="space"></div>
     </div>
   </div>
   <!-- All products -->
@@ -252,7 +204,7 @@ onMounted(async () => {
         </svg>
       </div>
     </div>
-    <h1 v-if="displayedProducts?.length === 0">No Data Found</h1>
+    <h2 v-if="displayedProducts?.length === 0">No Data Found</h2>
   </section>
   <!-- Saved Products -->
   <section class="saved_cards" v-if="bookmarkpage === 'saved'">
@@ -296,6 +248,6 @@ onMounted(async () => {
         </svg>
       </div>
     </div>
-    <h1 v-if="displayedProducts?.length === 0">No Bookmark Found</h1>
+    <h2 v-if="displayedProducts?.length === 0">No Bookmark Found</h2>
   </section>
 </template>

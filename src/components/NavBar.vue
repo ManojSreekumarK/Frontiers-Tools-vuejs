@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 const isNavMenuOpen = ref(false)
-
+// responsive nav bar open
 const openNavMenu = () => {
   isNavMenuOpen.value = true
   document.body.style.overflow = 'hidden'
 }
-
+// responsive nav bar close
 const closeNavMenu = () => {
   isNavMenuOpen.value = false
   document.body.style.overflow = 'auto'

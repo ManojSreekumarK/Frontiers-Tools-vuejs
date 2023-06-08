@@ -5,7 +5,6 @@ import MainTools from '@/components/MainTools.vue'
 
 const components = {
   'search-box': SearchBox,
-
   'aside-component': AsideComponent,
   'main-tools': MainTools
 }

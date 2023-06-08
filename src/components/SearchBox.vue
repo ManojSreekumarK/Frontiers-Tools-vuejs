@@ -3,12 +3,13 @@ import { ref, watch } from 'vue'
 import { useSearchStore } from '@/stores/SearchStore'
 
 const searchQuery = ref('')
-
 const store = useSearchStore()
 
 // Watch for changes in the search query
 watch(searchQuery, (newValue) => {
-  store.setSearchQuery(newValue)
+  if (newValue.length > 3 || newValue.length == 0) {
+    store.setSearchQuery(newValue)
+  }
 })
 </script>
 
@@ -21,6 +22,6 @@ watch(searchQuery, (newValue) => {
       />
       <input type="text" v-model="searchQuery" placeholder="Search ..." class="searchbar_input" />
     </div>
-    <p class="validation">Type at least 3 characters</p>
+    <p v-if="searchQuery.length < 3" class="validation">Type at least 3 characters</p>
   </div>
 </template>
