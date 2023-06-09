@@ -71,7 +71,7 @@ const displayedProducts = computed(() => {
 
 // Methods
 // to load Product on a new tab
-const openInNewTab = (productId: string, segmentIcon: string) => {
+const openInNewTab = (productId: string) => {
   const currentURL = window.location.href + 'Product/' + productId
   window.open(currentURL, '_blank')
 }
@@ -165,19 +165,13 @@ onMounted(async () => {
   <!-- All products -->
   <section class="tool_cards" v-if="bookmarkpage === 'main'">
     <div v-for="product in displayedProducts" :key="product.productId" class="tool_card">
-      <div
-        class="tool_icon_container"
-        @click="openInNewTab(product.productId, getSegmentIcon(product.segmentId))"
-      >
+      <div class="tool_icon_container" @click="openInNewTab(product.productId)">
         <img
           :src="`src/assets/icons/${getSegmentIcon(product.segmentId)}`"
           alt="Segment.displayName"
         />
       </div>
-      <div
-        class="tool_card_content"
-        @click="openInNewTab(product.productId, getSegmentIcon(product.segmentId))"
-      >
+      <div class="tool_card_content" @click="openInNewTab(product.productId)">
         <span>{{ getSegmentName(product.segmentId) }}</span>
         <h2>{{ product.productName }}</h2>
         <p>
@@ -209,19 +203,13 @@ onMounted(async () => {
   <!-- Saved Products -->
   <section class="saved_cards" v-if="bookmarkpage === 'saved'">
     <div v-for="product in displayedProducts" :key="product.productId" class="tool_card">
-      <div
-        class="tool_icon_container"
-        @click="openInNewTab(product.productId, getSegmentIcon(product.segmentId))"
-      >
+      <div class="tool_icon_container" @click="openInNewTab(product.productId)">
         <img
           :src="`src/assets/icons/${getSegmentIcon(product.segmentId)}`"
           alt="Segment.displayName"
         />
       </div>
-      <div
-        class="tool_card_content"
-        @click="openInNewTab(product.productId, getSegmentIcon(product.segmentId))"
-      >
+      <div class="tool_card_content" @click="openInNewTab(product.productId)">
         <span>{{ getSegmentName(product.segmentId) }}</span>
         <h2>{{ product.productName }}</h2>
         <p>
